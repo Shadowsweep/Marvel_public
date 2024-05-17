@@ -30,11 +30,11 @@ Welcome to **Marvelverse**! This is a passion project where you can explore vari
 
 Although only a few heroes are featured right now, as a Marvel fan, I'm incredibly proud of this project! 😊
 
-## Check it out
+# Check it out
 
 Visit the website here: [Marvelverse](https://marvel-char.onrender.com/)
 
-## Join the Marvel Universe
+
 
 
 ---
