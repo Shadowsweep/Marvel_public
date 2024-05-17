@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marvelverse</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Condensed:700&display=swap">
+
+    <style>
+        /* Base styles */
+        body {
+            font-family: 'Roboto Condensed', sans-serif;
+            background-color: black;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Navbar styles */
+        .navbar {
+            background-color: #333; /* Dark grey */
+            overflow: hidden;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .navbar a {
+            float: right; /* Align to the right */
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold; /* Set font weight to bold */
+        }
+
+        .navbar a:hover {
+            background-color: #ddd; /* Light grey */
+            color: black;
+        }
+
+        /* Container styles */
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            align-items: center;
+            justify-content: center;
+            {% comment %} margin-top: 50px; {% endcomment %}
+            border: 2px solid white;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        /* Character styles */
+        .character {
+            margin-bottom: 20px;
+            padding: 20px;
+            display: flex;
+            border-radius: 8px;
+            flex-direction: column; /* Align items vertically */
+            align-items: center; /* Center items horizontally */
+            text-align: center;
+        }
+
+        .character img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 10px auto;
+            border-radius: 8px;
+        }
+
+        .search-container {
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .search-form {
+            float: left;
+            margin: 10px;
+        }
+
+        .search-input {
+            width: 300px;
+            padding: 8px;
+            border: none;
+            border-radius: 4px;
+        }
+
+        .search-submit {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .search-submit:hover {
+            background-color: #0056b3;
+        }
+
+        .datalist {
+            display: none;
+        }
+
+        .character-data {
+            display: flex;
+            flex-wrap: wrap; /* Wrap characters to next line on smaller screens */
+            justify-content: center; /* Center characters horizontally */
+        }
+
+        .column {
+            flex: 1;
+            margin: 0 10px;
+        }
+
+        .medium-image {
+            width: 250px;
+            height: 250px;
+            display: block;
+            margin: 10px auto;
+            border-radius: 8px;
+            object-fit: cover; 
+        }
+
+        /* Health bar styles */
+        .health-bar {
+            width: 200px;
+            height: 20px;
+            background-color: #f2f2f2;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .health-fill {
+            width: 100%;
+            height: 100%;
+            background-color: #13E34D;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .health-fill.low-health {
+            background-color: red;
+        }
+
+        /* Content styles */
+        .content {
+            padding: 20px;
+            margin-top: 60px;
+            color: white;
+            font-size: 24px;
+            text-align: center;
+        }
+        .versus{
+            margin-top:20px;
+             font-size:40px;
+              display: block;
+        }
+
+        .image-frame {
+            max-width: 250px;
+            max-height: 250px;
+            width: auto;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+         select {
+            font-family: 'Roboto Condensed', sans-serif; /* Use Roboto Condensed font */
+            padding: 8px;
+            border-radius: 5px; /* Added border radius */
+            border: 1px solid #ccc; /* Added border */
+            margin-right: 20px; /* Increase gap between search button and search box */
+            width: 200px; /* Set width of dropdown */
+        }
+
+        select:hover {
+            background-color: #ddd; /* Light grey background on hover */
+        }
+
+        /* Winner animation styles */
+        @keyframes popup {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .winner-animation {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 45px;
+            animation: popup 0.5s ease-out forwards;
+            background-color: #E30119;
+        }
+        
+
+        /* Media queries for tablets and mobiles */
+        @media screen and (max-width: 768px) {
+            .container {
+                max-width: 90%;
+            }
+
+            .search-input {
+                width: 100%;
+            }
+            .search-form {
+                margin-bottom: 10px; /* Add some spacing between the forms */
+            }
+        
+            select {
+                flex-direction: column; /* Stack the select and button vertically */
+                align-items: stretch;
+                margin-bottom: 10px;
+            }
+            .search-submit {
+                margin-left: 0; /* Remove the left margin */
+            }
+            #vsDiv {
+                display: none; /* Add this line to hide the "Vs" text */
+            }
+            .versus{
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <a href="https://www.linkedin.com/in/utkarsh-gupta-075908223/" target="_blank" >Follow me </a>
+        <a href="https://www.youtube.com/@techunsatisfied" target="_blank" >My Youtube</a>
+        <a href="/api/displaycsv">Search Heroes</a>
+        <a href="/api/arenafight">Fight Arena</a>
+        <a href="/">Player Info</a>
+       
+    </div>
+
+<!-- Content -->
+<div class="content">
+    <!-- Add the image and give it a class for styling -->
+    <img src="https://i.pinimg.com/originals/b5/de/08/b5de08b9050e254b008dcc13d28ac42e.jpg" class="image-frame">
+    {% comment %} <h1>Hellooo</h1> {% endcomment %}
+    <!-- Use the transparent-image class to apply styling -->
+</div>
+    
+
+
+    <div class="container">
+        <h1>Fighting Arena</h1>
+        <div class="search-container">
+
+           
+            <form action="#" method="GET" class="search-form">
+                <select name="search" class="search-input" id="characterSelect" onchange="logInput()">
+                  <option value="" selected disabled>Select First Character</option>
+                  <option value="Iron Man">Iron Man</option>
+                  <option value="Captain America">Captain America</option>
+                  <option value="Thor">Thor</option>
+                  <option value="Hulk">Hulk</option>
+                  <option value="Spider-Man">Spider-Man</option>
+                  <option value="Wolverine">Wolverine</option>
+                  <option value="Black Widow">Black Widow</option>
+                  <option value="Doctor Strange">Doctor Strange</option>
+                  <option value="Black Panther">Black Panther</option>
+                  <option value="Captain Marvel">Captain Marvel</option>
+                  <option value="Deadpool">Deadpool</option>
+                  <option value="Scarlet Witch">Scarlet Witch</option>
+                  <option value="Vision">Vision</option>
+                  <option value="Falcon">Falcon</option>
+                  <option value="Winter Soldier">Winter Soldier</option>
+                  <option value="Ant-Man">Ant-Man</option>
+                  <option value="Wasp">Wasp</option>
+                  <option value="Hawkeye">Hawkeye</option>
+                  <option value="Loki">Loki</option>
+                  <option value="Gamora">Gamora</option>
+                  <option value="Drax the Destroyer">Drax the Destroyer</option>
+                  <option value="Rocket Raccoon">Rocket Raccoon</option>
+                  <option value="Groot">Groot</option>
+                  <option value="Star-Lord">Star-Lord</option>
+                  <option value="Blade">Blade</option>
+                  <option value="Moon Knight">Moon Knight</option>
+                  <option value="Daredevil">Daredevil</option>
+                  <option value="Jessica Jones">Jessica Jones</option>
+                  <option value="Luke Cage">Luke Cage</option>
+                  <option value="Iron Fist">Iron Fist</option>
+                  <option value="Punisher">Punisher</option>
+                  <option value="Elektra">Elektra</option>
+                  <option value="Ghost Rider">Ghost Rider</option>
+                  <option value="Colossus">Colossus</option>
+                  <option value="Cyclops">Cyclops</option>
+                  <option value="Storm">Storm</option>
+                  <option value="Jean Grey">Jean Grey</option>
+                  <option value="Professor X">Professor X</option>
+                  <option value="Magneto">Magneto</option>
+                  <option value="Cable">Cable</option>
+                  <option value="Domino">Domino</option>
+                  <option value="Iceman">Iceman</option>
+                  <option value="Angel">Angel</option>
+                  <option value="Beast">Beast</option>
+                  <option value="Quicksilver">Quicksilver</option>
+                  <option value="Ms. Marvel (Kamala Khan)">Ms. Marvel (Kamala Khan)</option>
+                  <option value="She-Hulk">She-Hulk</option>
+                  <option value="Nova">Nova</option>
+                  <option value="Namor">Namor</option>
+                  <option value="Silver Surfer">Silver Surfer</option>
+                  <option value="Ms. Marvel (Carol Danvers)">Ms. Marvel (Carol Danvers)</option>
+                  <option value="Quake (Daisy Johnson)">Quake (Daisy Johnson)</option>
+                  <option value="Gambit">Gambit</option>
+                  <option value="Nightcrawler">Nightcrawler</option>
+                  <option value="War Machine">War Machine</option>
+                  <option value="Scarlet Spider (Ben Reilly)">Scarlet Spider (Ben Reilly)</option>
+                  <option value="Cable (Nathan Summers)">Cable (Nathan Summers)</option>
+                  <option value="Miles Morales (Spider-Man)">Miles Morales (Spider-Man)</option>
+                  <option value="Nova (Sam Alexander)">Nova (Sam Alexander)</option>
+                  <option value="Black Bolt">Black Bolt</option>
+                  <option value="Medusa">Medusa</option>
+                  <option value="Crystal">Crystal</option>
+                  <option value="Mockingbird">Mockingbird</option>
+                  <option value="Jessica Drew (Spider-Woman)">Jessica Drew (Spider-Woman)</option>
+                  <option value="Vision (Jonas)">Vision (Jonas)</option>
+                  <option value="Hercules">Hercules</option>
+                  <option value="Squirrel Girl">Squirrel Girl</option>
+                  <option value="Wiccan">Wiccan</option>
+                  <option value="Polaris">Polaris</option>
+                  <option value="Elsa Bloodstone">Elsa Bloodstone</option>
+                  <option value="Sunspot">Sunspot</option>
+                  <option value="Cannonball">Cannonball</option>
+                  <option value="Dazzler">Dazzler</option>
+                  <option value="Moonstone">Moonstone</option>
+                  <option value="Firestar">Firestar</option>
+                  <option value="Magik (Illyana Rasputin)">Magik (Illyana Rasputin)</option>
+                  <option value="Multiple Man">Multiple Man</option>
+                  <option value="Jessica Jones (Jewel)">Jessica Jones (Jewel)</option>
+                  <option value="Shang-Chi">Shang-Chi</option>
+                  <option value="Iron Lad">Iron Lad</option>
+                  <option value="Echo">Echo</option>
+                  <option value="Hyperion">Hyperion</option>
+                  <option value="Brother Voodoo">Brother Voodoo</option>
+                  <option value="Tigra">Tigra</option>
+                  <option value="Morbius">Morbius</option>
+                  <option value="Blade (Eric Brooks)">Blade (Eric Brooks)</option>
+                  <option value="Shuri">Shuri</option>
+                  <option value="White Tiger">White Tiger</option>
+                  <option value="Namorita">Namorita</option>
+                  <option value="Ironheart (Riri Williams)">Ironheart (Riri Williams)</option>
+                  <option value="Brood">Brood</option>
+                  <option value="Throg (Simon Walterson)">Throg (Simon Walterson)</option>
+                  <option value="Power Pack">Power Pack</option>
+                  <option value="Speedball">Speedball</option>
+                  <option value="Karolina Dean (Lucy in the Sky)">Karolina Dean (Lucy in the Sky)</option>
+                  <option value="X-23 (Laura Kinney)">X-23 (Laura Kinney)</option>
+                  <option value="Rogue">Rogue</option>
+                  <option value="Magik (Amanda Sefton)">Magik (Amanda Sefton)</option>
+                  <option value="Forge">Forge</option>
+                  <option value="Spider-Gwen (Gwen Stacy)">Spider-Gwen (Gwen Stacy)</option>
+                  <option value="Blue Marvel (Adam Brashear)">Blue Marvel (Adam Brashear)</option>
+                  <option value="Black Cat (Felicia Hardy)">Black Cat (Felicia Hardy)</option>
+                  <option value="Speed (Tommy Shepherd)">Speed (Tommy Shepherd)</option>
+                  <option value="Kid Omega (Quentin Quire)">Kid Omega (Quentin Quire)</option>
+                  <option value="Synapse">Synapse</option>
+                  <option value="Firebird">Firebird</option>
+                  <option value="Warlock">Warlock</option>
+                  <option value="Wiccan (Billy Kaplan)">Wiccan (Billy Kaplan)</option>
+                  <option value="Songbird">Songbird</option>
+                  <option value="Havok (Alex Summers)">Havok (Alex Summers)</option>
+                  <option value="Jessica Jones (Power Woman)">Jessica Jones (Power Woman)</option>
+                  <option value="Black Knight (Dane Whitman)">Black Knight (Dane Whitman)</option>
+                  <option value="Moondragon">Moondragon</option>
+                  <option value="Quasar (Wendell Vaughn)">Quasar (Wendell Vaughn)</option>
+                  <option value="Jack of Hearts">Jack of Hearts</option>
+                  <option value="Machine Man (Aaron Stack)">Machine Man (Aaron Stack)</option>
+                  <option value="Shanna the She-Devil">Shanna the She-Devil</option>
+                  <option value="Noh-Varr (Captain Marvel)">Noh-Varr (Captain Marvel)</option>
+                  <option value="Echo (Maya Lopez)">Echo (Maya Lopez)</option>
+                  <option value="Beta Ray Bill">Beta Ray Bill</option>
+                  <option value="Spider-Woman (Julia Carpenter)">Spider-Woman (Julia Carpenter)</option>
+                  <option value="Mister Fantastic">Mister Fantastic</option>
+                  <option value="Captain Britain (Brian Braddock)">Captain Britain (Brian Braddock)</option>
+                  <option value="Wolverine">Wolverine</option>
+                </select>
+              </form>
+              
+            
+              <form action="#" method="GET" class="search-form">
+                <select name="search2" class="search-input" id="secondCharacterSelect">
+                  <option value="" selected disabled>Second Character</option>
+                  {% for row in second_csv_data %}
+                    <option value="{{ row.CharacterName }}">{{ row.CharacterName }}</option>
+                  {% endfor %}
+                  <!-- All character names added below -->
+                  <option value="Iron Man">Iron Man</option>
+                  <option value="Captain America">Captain America</option>
+                  <option value="Thor">Thor</option>
+                  <option value="Hulk">Hulk</option>
+                  <option value="Spider-Man">Spider-Man</option>
+                  <option value="Wolverine">Wolverine</option>
+                  <option value="Black Widow">Black Widow</option>
+                  <option value="Doctor Strange">Doctor Strange</option>
+                  <option value="Black Panther">Black Panther</option>
+                  <option value="Captain Marvel">Captain Marvel</option>
+                  <option value="Deadpool">Deadpool</option>
+                  <option value="Scarlet Witch">Scarlet Witch</option>
+                  <option value="Vision">Vision</option>
+                  <option value="Falcon">Falcon</option>
+                  <option value="Winter Soldier">Winter Soldier</option>
+                  <option value="Ant-Man">Ant-Man</option>
+                  <option value="Wasp">Wasp</option>
+                  <option value="Hawkeye">Hawkeye</option>
+                  <option value="Loki">Loki</option>
+                  <option value="Gamora">Gamora</option>
+                  <option value="Drax the Destroyer">Drax the Destroyer</option>
+                  <option value="Rocket Raccoon">Rocket Raccoon</option>
+                  <option value="Groot">Groot</option>
+                  <option value="Star-Lord">Star-Lord</option>
+                  <option value="Blade">Blade</option>
+                  <option value="Moon Knight">Moon Knight</option>
+                  <option value="Daredevil">Daredevil</option>
+                  <option value="Jessica Jones">Jessica Jones</option>
+                  <option value="Luke Cage">Luke Cage</option>
+                  <option value="Iron Fist">Iron Fist</option>
+                  <option value="Punisher">Punisher</option>
+                  <option value="Elektra">Elektra</option>
+                  <option value="Ghost Rider">Ghost Rider</option>
+                  <option value="Colossus">Colossus</option>
+                  <option value="Cyclops">Cyclops</option>
+                  <option value="Storm">Storm</option>
+                  <option value="Jean Grey">Jean Grey</option>
+                  <option value="Professor X">Professor X</option>
+                  <option value="Magneto">Magneto</option>
+                  <option value="Cable">Cable</option>
+                  <option value="Domino">Domino</option>
+                  <option value="Iceman">Iceman</option>
+                  <option value="Angel">Angel</option>
+                  <option value="Beast">Beast</option>
+                  <option value="Quicksilver">Quicksilver</option>
+                  <option value="Ms. Marvel (Kamala Khan)">Ms. Marvel (Kamala Khan)</option>
+                  <option value="She-Hulk">She-Hulk</option>
+                  <option value="Nova">Nova</option>
+                  <option value="Namor">Namor</option>
+                  <option value="Silver Surfer">Silver Surfer</option>
+                  <option value="Ms. Marvel (Carol Danvers)">Ms. Marvel (Carol Danvers)</option>
+                  <option value="Quake (Daisy Johnson)">Quake (Daisy Johnson)</option>
+                  <option value="Gambit">Gambit</option>
+                  <option value="Nightcrawler">Nightcrawler</option>
+                  <option value="War Machine">War Machine</option>
+                  <option value="Scarlet Spider (Ben Reilly)">Scarlet Spider (Ben Reilly)</option>
+                  <option value="Cable (Nathan Summers)">Cable (Nathan Summers)</option>
+                  <option value="Miles Morales (Spider-Man)">Miles Morales (Spider-Man)</option>
+                  <option value="Nova (Sam Alexander)">Nova (Sam Alexander)</option>
+                  <option value="Black Bolt">Black Bolt</option>
+                  <option value="Medusa">Medusa</option>
+                  <option value="Crystal">Crystal</option>
+                  <option value="Mockingbird">Mockingbird</option>
+                  <option value="Jessica Drew (Spider-Woman)">Jessica Drew (Spider-Woman)</option>
+                  <option value="Vision (Jonas)">Vision (Jonas)</option>
+                  <option value="Hercules">Hercules</option>
+                  <option value="Squirrel Girl">Squirrel Girl</option>
+                  <option value="Wiccan">Wiccan</option>
+                  <option value="Polaris">Polaris</option>
+                  <option value="Elsa Bloodstone">Elsa Bloodstone</option>
+                  <option value="Sunspot">Sunspot</option>
+                  <option value="Cannonball">Cannonball</option>
+                  <option value="Dazzler">Dazzler</option>
+                  <option value="Moonstone">Moonstone</option>
+                  <option value="Firestar">Firestar</option>
+                  <option value="Magik (Illyana Rasputin)">Magik (Illyana Rasputin)</option>
+                  <option value="Multiple Man">Multiple Man</option>
+                  <option value="Jessica Jones (Jewel)">Jessica Jones (Jewel)</option>
+                  <option value="Shang-Chi">Shang-Chi</option>
+                  <option value="Iron Lad">Iron Lad</option>
+                  <option value="Echo">Echo</option>
+                  <option value="Hyperion">Hyperion</option>
+                  <option value="Brother Voodoo">Brother Voodoo</option>
+                  <option value="Tigra">Tigra</option>
+                  <option value="Morbius">Morbius</option>
+                  <option value="Blade (Eric Brooks)">Blade (Eric Brooks)</option>
+                  <option value="Shuri">Shuri</option>
+                  <option value="White Tiger">White Tiger</option>
+                  <option value="Namorita">Namorita</option>
+                  <option value="Ironheart (Riri Williams)">Ironheart (Riri Williams)</option>
+                  <option value="Brood">Brood</option>
+                  <option value="Throg (Simon Walterson)">Throg (Simon Walterson)</option>
+                  <option value="Power Pack">Power Pack</option>
+                  <option value="Speedball">Speedball</option>
+                  <option value="Karolina Dean (Lucy in the Sky)">Karolina Dean (Lucy in the Sky)</option>
+                  <option value="X-23 (Laura Kinney)">X-23 (Laura Kinney)</option>
+                  <option value="Rogue">Rogue</option>
+                  <option value="Magik (Amanda Sefton)">Magik (Amanda Sefton)</option>
+                  <option value="Forge">Forge</option>
+                  <option value="Spider-Gwen (Gwen Stacy)">Spider-Gwen (Gwen Stacy)</option>
+                  <option value="Blue Marvel (Adam Brashear)">Blue Marvel (Adam Brashear)</option>
+                  <option value="Black Cat (Felicia Hardy)">Black Cat (Felicia Hardy)</option>
+                  <option value="Speed (Tommy Shepherd)">Speed (Tommy Shepherd)</option>
+                  <option value="Kid Omega (Quentin Quire)">Kid Omega (Quentin Quire)</option>
+                  <option value="Synapse">Synapse</option>
+                  <option value="Firebird">Firebird</option>
+                  <option value="Warlock">Warlock</option>
+                  <option value="Wiccan (Billy Kaplan)">Wiccan (Billy Kaplan)</option>
+                  <option value="Songbird">Songbird</option>
+                  <option value="Havok (Alex Summers)">Havok (Alex Summers)</option>
+                  <option value="Jessica Jones (Power Woman)">Jessica Jones (Power Woman)</option>
+                  <option value="Black Knight (Dane Whitman)">Black Knight (Dane Whitman)</option>
+                  <option value="Moondragon">Moondragon</option>
+                  <option value="Quasar (Wendell Vaughn)">Quasar (Wendell Vaughn)</option>
+                  <option value="Jack of Hearts">Jack of Hearts</option>
+                  <option value="Machine Man (Aaron Stack)">Machine Man (Aaron Stack)</option>
+                  <option value="Shanna the She-Devil">Shanna the She-Devil</option>
+                  <option value="Noh-Varr (Captain Marvel)">Noh-Varr (Captain Marvel)</option>
+                  <option value="Echo (Maya Lopez)">Echo (Maya Lopez)</option>
+                  <option value="Beta Ray Bill">Beta Ray Bill</option>
+                  <option value="Spider-Woman (Julia Carpenter)">Spider-Woman (Julia Carpenter)</option>
+                  <option value="Mister Fantastic">Mister Fantastic</option>
+                  <option value="Captain Britain (Brian Braddock)">Captain Britain (Brian Braddock)</option>
+                  <option value="Wolverine">Wolverine</option>
+                </select>
+                <input type="submit" value="Search" class="search-submit" id="searchButton">
+              </form>
+              
+        </div>
+     
+        <!-- Display character data without table if there is a search query -->
+        <div class="character-data">
+            <div class="column">
+                {% for row in first_csv_data %}
+                    <div class="character">
+                        <h2><span id="firstCharacterName" >{{ row.CharacterName }}</span></h2>
+                        <p  ><strong></strong><span id="firstHumanAbilities" style="display:none;" > {{ row.HumanAbilities }}</span></p>
+                        <p > <strong></strong> <span id="firstStrength" style="display:none;" > {{ row.Strength }} </span></p>
+                        <p><strong></strong><span style="display:none;"> {{ row.Description }}</span></p>
+                        <div class="health-bar" id="firstHealthBar"></div>
+                        <img src="{{ row.image_url }}" alt="{{ row.CharacterName }}" class="medium-image"> 
+                    </div>
+                {% empty %}
+                    {% if search_query %}
+                      <p1> Please select character </p1>
+                    {% endif %}
+                {% endfor %}
+
+                
+            </div>
+            
+            <div id="vsDiv"  class="versus" > Vs </div>
+        
+            <div class="column">
+                {% for row in second_csv_data %}
+                    <div class="character">
+                    
+                        <h2><span id="secondCharacterName" > {{ row.CharacterName }} </span></h2>
+                        <p ><strong></strong> <span  style="display:none;"  id="secondHumanAbilities" > {{ row.HumanAbilities }} </span> </p>
+                        <p  ><strong></strong><span style="display:none;"  id="secondStrength" > {{ row.Strength }} </span> </p>
+                        <p><strong></strong><span style="display:none;" > {{ row.Description }} </span></p>
+                        <div class="health-bar" id="secondHealthBar"></div>
+                        <img src="{{ row.image_url }}" alt="{{ row.CharacterName }}" class="medium-image" > 
+                    </div>
+                {% empty %}
+                    {% if search_query2 %}
+                    <p1 > Please select character </p1>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        <div class="winner-animation" id="winnerContainer">Please select Character 1 and then 2</div>
+
+    </div>
+
+    <script>
+        // Function to handle form submission
+        function logInput() {
+            const searchInput = document.querySelector('.search-input');
+            const currentText = searchInput.value;
+    
+            // Find the selected option from the datalist
+            const datalist = document.getElementById('characterNames');
+            const options = datalist.getElementsByTagName('option');
+            let selectedOptionValue = '';
+            for (let i = 0; i < options.length; i++) {
+                if (options[i].value === currentText) {
+                    selectedOptionValue = options[i].value;
+                    break;
+                }
+            }
+    
+            console.log("Selected character:", selectedOptionValue);
+            console.log("Input text:", currentText);
+        }
+    
+        function handleFormSubmit(event) {
+            event.preventDefault(); // Prevent default form submission
+            const form = event.target; // Get the form that was submitted
+            const formData = new FormData(form); // Create FormData object from form data
+    
+            // Get the selected option value from logInput function
+            const searchInput = document.querySelector('.search-input');
+            const currentText = searchInput.value;
+            const searchValue = currentText; // Add currentText to searchValue
+            console.log(searchValue)
+            const searchValue2 = formData.get('search2'); // Get search value from form data
+            console.log(searchValue2)
+    
+            // Redirect to the URL with the search query
+            window.location.href = `?search=${encodeURIComponent(searchValue)}&search2=${encodeURIComponent(searchValue2)}`;
+        }
+    
+        // Add event listeners to both forms
+        document.querySelectorAll('.search-form').forEach(form => {
+            form.addEventListener('submit', handleFormSubmit);
+        });
+    
+       // Wait for the DOM content to be fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Function to fetch character data and compare them
+    function compareCharacters() {
+        console.log("Function called");
+
+        // Get the values of Human Abilities and Strength for both characters
+        var firstHumanAbilities = parseFloat(document.getElementById('firstHumanAbilities').textContent);
+        var firstStrength = parseFloat(document.getElementById('firstStrength').textContent);
+        var secondHumanAbilities = parseFloat(document.getElementById('secondHumanAbilities').textContent);
+        var secondStrength = parseFloat(document.getElementById('secondStrength').textContent);
+        var secondCharacterName = document.getElementById('secondCharacterName').textContent;
+        var firstCharacterName = document.getElementById('firstCharacterName').textContent;
+
+        
+        
+        // Check if any of the fetched values are NaN
+        if (isNaN(firstHumanAbilities) || isNaN(firstStrength) || isNaN(secondHumanAbilities) || isNaN(secondStrength)) {
+            console.error("One or more values are not numeric.");
+            return; // Exit the function if any value is not numeric
+        }
+        
+        // Calculate the average for both characters
+        var firstAvg =  (firstHumanAbilities + firstStrength) / 2;
+        var secondAvg = (secondHumanAbilities + secondStrength) / 2;
+
+          // Get references to the button and the div
+          
+        
+        // Display the winner message
+        var winnerMessage;
+        if (firstAvg > secondAvg) {
+            winnerMessage = document.createElement('p');
+            winnerMessage.textContent =  firstCharacterName + " wins!";
+        } else if (firstAvg < secondAvg) {
+            winnerMessage = document.createElement('p');
+            winnerMessage.textContent =  secondCharacterName + " wins!";
+        } else {
+            winnerMessage = document.createElement('p');
+            winnerMessage.textContent = "It's a tie!";
+        }
+
+        // Append the winner message to a container
+        var container = document.getElementById('winnerContainer');
+        container.innerHTML = '';
+        container.appendChild(winnerMessage);
+    }
+
+    // Call compareCharacters after the page is fully loaded
+    compareCharacters();
+});
+
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Function to update the health bar based on the average health
+            function updateHealthBars() {
+                // Get the values of Human Abilities and Strength for both characters
+                var firstHumanAbilities = parseFloat(document.getElementById('firstHumanAbilities').textContent);
+                var firstStrength = parseFloat(document.getElementById('firstStrength').textContent);
+                var secondHumanAbilities = parseFloat(document.getElementById('secondHumanAbilities').textContent);
+                var secondStrength = parseFloat(document.getElementById('secondStrength').textContent);
+        
+                // Check if any of the fetched values are NaN
+                if (isNaN(firstHumanAbilities) || isNaN(firstStrength) || isNaN(secondHumanAbilities) || isNaN(secondStrength)) {
+                    console.error("One or more values are not numeric.");
+                    return; // Exit the function if any value is not numeric
+                }
+                
+                // Calculate the average health for both characters
+                var firstAverageHealth = ((firstHumanAbilities + firstStrength) / 2) / 10; // Adjust to be out of 100
+                var secondAverageHealth = ((secondHumanAbilities + secondStrength) / 2) / 10; // Adjust to be out of 100
+        
+                console.log("First Average Health:", firstAverageHealth);
+                console.log("Second Average Health:", secondAverageHealth);
+        
+                // Update the health bar width for the first character
+                var firstHealthBar = document.getElementById('firstHealthBar');
+                var firstHealthFill = document.createElement('div');
+                firstHealthFill.classList.add('health-fill');
+                firstHealthFill.style.width = firstAverageHealth + '%';
+                firstHealthBar.innerHTML = ''; // Clear previous content
+                firstHealthBar.appendChild(firstHealthFill);
+        
+                // Update the health bar width for the second character
+                var secondHealthBar = document.getElementById('secondHealthBar');
+                var secondHealthFill = document.createElement('div');
+                secondHealthFill.classList.add('health-fill');
+                secondHealthFill.style.width = secondAverageHealth + '%';
+                secondHealthBar.innerHTML = ''; // Clear previous content
+                secondHealthBar.appendChild(secondHealthFill);
+        
+                // Determine which character has lower health and apply the low-health class
+                if (firstAverageHealth < secondAverageHealth) {
+                    firstHealthFill.classList.add('low-health');
+                } else if (firstAverageHealth > secondAverageHealth) {
+                    secondHealthFill.classList.add('low-health');
+                }
+            }
+        
+            // Call updateHealthBars after the page is fully loaded
+            updateHealthBars();
+         
+        });
+        
+        
+    </script>
+    {% comment %} <script>
+        const searchButton = document.getElementById('searchButton');
+        const vsDiv = document.getElementById('vsDiv');
+    
+        // Add click event listener to the button
+        searchButton.addEventListener('click', function() {
+            // Toggle the visibility of the div
+                vsDiv.style.display = 'block';
+            
+        });
+    </script> {% endcomment %}
+   
+    
+
+</body>
+</html>

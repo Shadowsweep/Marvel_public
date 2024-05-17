@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Full Screen Black Template</title>
+    <!-- Include Google Fonts for Roboto Condensed -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Condensed:700&display=swap">
+    <style>
+        /* Full screen black background */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: black;
+            {% comment %} overflow: hidden; {% endcomment %}
+            font-family: 'Roboto Condensed', sans-serif;
+        }
+
+        /* Navigation bar styles */
+        .navbar {
+            background-color: #333; /* Dark grey */
+            overflow: hidden;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .navbar a {
+            float: right; /* Align to the right */
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold; /* Set font weight to bold */
+        }
+
+        .navbar a:hover {
+            background-color: #ddd; /* Light grey */
+            color: black;
+        }
+
+        /* Adjustments for full screen navigation */
+        .navbar.fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        /* Content styles */
+        .content {
+            padding: 20px;
+            margin-top: 60px; /* Adjust according to navbar height */
+            color: white;
+            font-size: 24px;
+            text-align: center; /* Center-align content */
+        }
+
+        /* Container styles */
+        .container {
+            width: 90%; /* Use a percentage for responsiveness */
+            max-width: 1200px; /* Set a maximum width to ensure it doesn't become too wide */
+            margin: 50px auto; /* Center the container horizontally and provide spacing from the top */
+            padding: 20px; /* Add padding for spacing between content and container edges */
+            border: 2px solid silver;
+            box-sizing: border-box; /* Include padding and border in the total width */
+            display: flex; /* Use flexbox layout */
+            align-items: center; /* Align items vertically */
+        }
+
+        input[type="text"] {
+            width: calc(100% - 160px); /* Adjusted width to accommodate the download button */
+            padding: 8px;
+            margin-bottom: 20px;
+            margin-left: 50px; /* Shifted the text box rightwards */
+            box-sizing: border-box;
+            border-radius: 5px; /* Added border radius */
+            border: 1px solid #ccc; /* Added border */
+            margin-right: 20px; /* Increase gap between search button and search box */
+        }
+
+        input[type="submit"] {
+            background-color: #007bff; /* Added background color */
+            color: white;
+            padding: 10px 20px; /* Increased padding */
+            font-size: 16px; /* Increased font size */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3; /* Darker color on hover */
+        }
+
+        .character-data {
+            display: flex;
+            justify-content: flex-end;
+            align-items: flex-start;
+            width: 100%;
+        }
+
+        .character {
+            margin-left: 20px; /* Add spacing between character data and image */
+            color: white;
+        }
+
+        .character img {
+            max-width: 300px; /* Limit image width */
+            max-height: 300px; /* Limit image height */
+        }
+        .medium-image {
+            width: 250px; /* Adjust as needed */
+            height: auto; /* Maintain aspect ratio */
+        }
+        
+    </style>
+</head>
+<body>
+
+<!-- Navigation bar -->
+<div class="navbar">
+    <a href="#">Contact</a>
+    <a href="#">Services</a>
+    <a href="#">About</a>
+    <a href="#">Home</a>
+</div>
+
+<!-- Content -->
+<div class="content">
+    <!-- Add the image and give it a class for styling -->
+    <img src="static/marvel_logo.png" class="transparent-image">
+    <!-- Use the transparent-image class to apply styling -->
+</div>
+
+
+
+<div class="container">
+    <h1 style="color: white;">Write character name here -  &nbsp; &nbsp;&nbsp;&nbsp;</h1>
+    <div style="overflow: hidden;">
+        <form action="#" method="GET" style="float: left;">
+            <input list="characterNames" name="search" placeholder="Search by Character Name" value="{{ search_query }}">
+            <datalist id="characterNames">
+                {% for row in csv_data %}
+                <option value="{{ row.CharacterName }}">
+                {% endfor %}
+            </datalist>
+            <input type="submit" value="Search">
+        </form>
+    </div>
+
+    
+    <!-- Display character data without table if there is a search query -->
+    {% if search_query %}
+    <div class="character-data">
+        {% for row in csv_data %}
+            <div class="character" style="color: white;">
+                <h2>{{ row.CharacterName }}</h2>
+                <p><strong>Human Abilities:</strong> {{ row.HumanAbilities }}</p>
+                <p><strong>Strength:</strong> {{ row.Strength }}</p>
+                <p><strong>Description:</strong> {{ row.Description }}</p>
+                <img src="{{ row.image_url }}" alt="{{ row.CharacterName }}" class="medium-image"> 
+                {% comment %} <p><strong>Image:</strong> {{ row.image_url }}</p> {% endcomment %}
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+
+
+
+</body>
+</html>

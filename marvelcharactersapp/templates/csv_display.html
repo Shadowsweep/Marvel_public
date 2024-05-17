@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marvelverse</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa; /* Added background color */
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            border: 2px solid black; /* Add border to the table */
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid black; /* Add border to table cells */
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        input[type="text"] {
+            width: 100px; /* Set the width of the input box for serial number */
+            padding: 8px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            border-radius: 5px; /* Added border radius */
+            border: 1px solid #ccc; /* Added border */
+        }
+
+        input[type="submit"], input[type="button"]  {
+            background-color: #007bff; /* Added background color */
+            color: white;
+            padding: 10px 20px; /* Increased padding */
+            font-size: 16px; /* Increased font size */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3; /* Darker color on hover */
+        }
+
+        @media only screen and (max-width: 600px) {
+            /* Adjust table layout for small screens */
+            input[type="text"] {
+                width: 80%; /* Make the search input wider on small screens */
+            }
+            table {
+                font-size: 14px; /* Decrease font size for better fit on small screens */
+            }
+            th, td {
+                padding: 6px; /* Decrease padding on table cells */
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h1>Heroes Data</h1>
+
+<!-- Search bar and Download CSV button -->
+<div style="overflow: hidden;"> <!-- Added a wrapper to contain both elements -->
+    <form action="#" method="GET" style="float: left;"> <!-- Float the form to the left -->
+        <input list="characterNames" name="search" placeholder="Search by Character Name" value="{{ search_query }}">
+        <datalist id="characterNames">
+            {% for row in csv_data %}
+            <option value="{{ row.CharacterName }}">
+            {% endfor %}
+        </datalist>
+        <input type="submit" value="Search">
+        <input type="button" value="Back" onclick="window.history.back()">
+    </form>
+   
+</div>
+
+<table>
+  <tr>
+    <th>Character Name</th>
+    <th>Human Abilities</th>
+    <th>Strength</th>
+    <th>Description</th>
+    <th>Image</th>
+  </tr>
+  {% for row in csv_data %}
+  <tr>
+    <td>{{ row.CharacterName }}</td>
+    <td>{{ row.HumanAbilities }}</td>
+    <td>{{ row.Strength }}</td>
+    <td>{{ row.Description }}</td>
+    <td><a href="{{ row.image_url }}" target="_blank">{{ row.image_url }}</a></td>
+  </tr>
+  {% endfor %}
+</table>
+
+</body>
+</html>

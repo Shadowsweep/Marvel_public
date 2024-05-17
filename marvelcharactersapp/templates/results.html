@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marvelverse</title>
+    <!-- Include Google Fonts for Roboto Condensed -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Condensed:700&display=swap">
+    <style>
+        /* Full screen black background */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: black;
+            font-family: 'Roboto Condensed', sans-serif; /* Use Roboto Condensed font */
+        }
+
+        /* Navigation bar styles */
+        .navbar {
+            background-color: #333; /* Dark grey */
+            overflow: hidden;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .navbar a {
+            float: right; /* Align to the right */
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold; /* Set font weight to bold */
+        }
+
+        .navbar a:hover {
+            background-color: #ddd; /* Light grey */
+            color: black;
+        }
+
+        /* Adjustments for full screen navigation */
+        .navbar.fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        /* Content styles */
+        .content {
+            padding: 20px;
+            margin-top: 60px; /* Adjust according to navbar height */
+            color: white;
+            font-size: 24px;
+            text-align: center; /* Center-align content */
+        }
+
+        /* Container styles */
+        .container {
+            width: 90%; /* Use a percentage for responsiveness */
+            max-width: 1200px; /* Set a maximum width to ensure it doesn't become too wide */
+            margin: 50px auto; /* Center the container horizontally and provide spacing from the top */
+            padding: 20px; /* Add padding for spacing between content and container edges */
+            border: 2px solid silver;
+            box-sizing: border-box; /* Include padding and border in the total width */
+            display: flex; /* Use flexbox layout */
+            align-items: center; /* Align items vertically */
+        }
+
+        select {
+            font-family: 'Roboto Condensed', sans-serif; /* Use Roboto Condensed font */
+            padding: 8px;
+            border-radius: 5px; /* Added border radius */
+            border: 1px solid #ccc; /* Added border */
+            margin-right: 20px; /* Increase gap between search button and search box */
+            width: 200px; /* Set width of dropdown */
+        }
+
+        select:hover {
+            background-color: #ddd; /* Light grey background on hover */
+        }
+
+        input[type="submit"], input[type="button"]   {
+            background-color: #007bff; /* Added background color */
+            color: white;
+            margin-top:20px;
+            padding: 10px 20px; /* Increased padding */
+            font-size: 16px; /* Increased font size */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3; /* Darker color on hover */
+           
+        }
+
+        .character-data {
+            display: flex;
+            justify-content: flex-end;
+            align-items: flex-start;
+            width: 100%;
+        }
+
+        .character {
+            margin-left: 20px; /* Add spacing between character data and image */
+            color: white;
+        }
+
+        .character img {
+            max-width: 300px; /* Limit image width */
+        }
+        .medium-image {
+            width: 250px; /* Adjust as needed */
+            height: auto; /* Maintain aspect ratio */
+        }
+        .image-frame {
+            max-width: 200px; /* Limit the maximum width of the image */
+            max-height: 200px; /* Limit the maximum height of the image */
+            width: auto; /* Allow the width to adjust proportionally */
+            height: auto; /* Allow the height to adjust proportionally */           
+            display: block; /* Ensure the image is displayed as a block element */
+            margin: 0 auto; /* Center the image horizontally */
+        }
+
+        .container {
+            /* ... (existing styles) ... */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden; /* Prevent overflow */
+        }
+        
+        .character-data {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            overflow: hidden; /* Prevent overflow */
+        }
+        
+        .character {
+            margin-top: 20px;
+            text-align: center;
+            overflow: hidden; /* Prevent overflow */
+        }
+        
+        .medium-image {
+            max-width: 100%;
+            height: auto;
+            overflow: hidden; /* Prevent overflow */
+        }
+        
+    </style>
+</head>
+<body>
+
+<!-- Navigation bar -->
+<div class="navbar">
+    <a href="https://www.linkedin.com/in/utkarsh-gupta-075908223/" target="_blank" >Follow me </a>
+    <a href="https://www.youtube.com/@techunsatisfied" target="_blank" >My Youtube</a>
+    <a href="/api/displaycsv">Search Heroes</a>
+    <a href="/api/arenafight">Fight Arena</a>
+    <a href="/">Player Info</a>
+</div>
+
+<!-- Content -->
+<div class="content">
+    <!-- Add the image and give it a class for styling -->
+    <img src="https://i.pinimg.com/originals/b5/de/08/b5de08b9050e254b008dcc13d28ac42e.jpg" class="image-frame">
+    <!-- Use the transparent-image class to apply styling -->
+</div>
+
+<div class="container">
+    <h1 style="color: white;">Select a character:&nbsp;&nbsp;</h1>
+    <div style="overflow: hidden;">
+        <form action="#" method="GET" style="float: left;">
+            <select name="search">
+                <option value="">-- Select a character --</option>
+                {% for row in csv_data %}
+                    <option value="{{ row.CharacterName }}">{{ row.CharacterName }}</option>
+                {% endfor %}
+            </select>
+            <input type="submit" value="Search">
+            <input type="button" value="Back" onclick="window.history.back()">
+        </form>
+    </div>
+    
+    <!-- Display character data without table if there is a search query -->
+    {% if search_query %}
+    <div class="character-data">
+        {% for row in csv_data %}
+            {% if row.CharacterName == search_query %}
+            <div class="character" style="color: white;">
+                <h2>{{ row.CharacterName }}</h2>
+                <p><strong>Human Abilities:</strong> {{ row.HumanAbilities }}</p>
+                <p><strong>Strength:</strong> {{ row.Strength }}</p>
+                <p><strong>Description:</strong> {{ row.Description }}</p>
+                <img src="{{ row.image_url }}" alt="{{ row.CharacterName }}" class="medium-image"> 
+                {% comment %} <p><strong>Image:</strong> {{ row.image_url }}</p> {% endcomment %}
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+
+</body>
+</html>
